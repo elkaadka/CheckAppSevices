@@ -10,6 +10,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class StatusController extends Controller
 {
     /**
+     * This route checks the status of the  following services :
+     *   - Mysql
+     *   - Redis
+     *
      * @Route("/status", name="status_page")
      * @Method({"GET"})
      */
