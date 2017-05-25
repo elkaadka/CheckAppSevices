@@ -1,4 +1,7 @@
 health
 ======
 
-A Symfony project created on May 22, 2017, 6:03 pm.
+![build](https://travis-ci.org/elkaadka/health.svg?branch=master)
+
+
+Checks the health of the services : Mysql and Redis
