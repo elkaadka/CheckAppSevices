@@ -2,6 +2,8 @@
 
 namespace AppBundle\Service;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * class AbstractService
  *
@@ -12,8 +14,12 @@ namespace AppBundle\Service;
  */
 abstract class AbstractService implements ServiceInterface
 {
-    public function __construct()
-    {
+    const SERVICE_NAME = 'UNKNOWN_SERVICE';
 
+    protected $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 }

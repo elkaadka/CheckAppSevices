@@ -12,12 +12,22 @@ namespace AppBundle\Service;
  */
 class Mysql extends AbstractService
 {
+    const SERVICE_NAME = 'MYSQL';
+
     /**
      * Checks if mysql is up
      * @return bool
      */
     public function isUp(): bool
     {
-        //@Todo implement the core
+        try {
+            $doctrine = $this->container->get('doctrine');
+            $connection = $doctrine->getConnection();
+            return $connection->ping();
+        } catch (\Exception $exception) {
+            return false;
+        }
+
+        return false;
     }
 }

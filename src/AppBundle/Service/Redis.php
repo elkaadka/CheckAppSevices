@@ -12,12 +12,22 @@ namespace AppBundle\Service;
  */
 class Redis extends AbstractService
 {
+    const SERVICE_NAME = 'REDIS';
+
     /**
-     * Checks if mysql is up
+     * Checks if redis is up
      * @return bool
      */
     public function isUp(): bool
     {
-        //@Todo implement the core
+        try {
+            $redis = $this->container->get('snc_redis.default');
+            $redis->connect();
+            return $redis->isConnected();
+        } catch (\Exception $exception) {
+            return false;
+        }
+
+        return false;
     }
 }
