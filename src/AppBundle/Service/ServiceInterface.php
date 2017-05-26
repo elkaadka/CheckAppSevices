@@ -17,4 +17,10 @@ interface ServiceInterface
      * @return bool
      */
     public function isUp(): bool;
+
+    /**
+     * returns the services name
+     * @return string
+     */
+    public function getServiceName(): string;
 }

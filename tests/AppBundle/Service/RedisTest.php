@@ -17,94 +17,74 @@ class RedisTest extends TestCase
 {
     public function testIsUp()
     {
-        $redis =$this
+        $redisClient =$this
             ->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $redis
+        $redisClient
             ->expects($this->once())
             ->method('connect')
             ->withAnyParameters()
             ->willReturn(null);
-        $redis
+        $redisClient
             ->expects($this->once())
             ->method('isConnected')
             ->withAnyParameters()
             ->willReturn(true);
 
-
-        $container = $this
-            ->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($redis);
-
-        $redis = new Redis($container);
+        $redis = new Redis($redisClient);
 
         $this->assertTrue($redis->isUp());
     }
 
     public function testIsUpFail()
     {
-        $redis =$this
+        $redisClient =$this
             ->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $redis
+        $redisClient
             ->expects($this->once())
             ->method('connect')
             ->withAnyParameters()
             ->willReturn(null);
-        $redis
+        $redisClient
             ->expects($this->once())
             ->method('isConnected')
             ->withAnyParameters()
             ->willReturn(false);
 
-
-        $container = $this
-            ->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($redis);
-
-        $redis = new Redis($container);
+        $redis = new Redis($redisClient);
 
         $this->assertFalse($redis->isUp());
     }
 
     public function testIsUpFailException()
     {
-        $redis =$this
+        $redisClient =$this
             ->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $redis
+        $redisClient
             ->expects($this->once())
             ->method('connect')
             ->withAnyParameters()
             ->willThrowException(new \Exception('Error'));
 
-        $container = $this
-            ->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($redis);
-
-        $redis = new Redis($container);
+        $redis = new Redis($redisClient);
 
         $this->assertFalse($redis->isUp());
+    }
+
+    public function testGetServiceName()
+    {
+        $redisClient = $this
+            ->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $redis = new Redis($redisClient);
+
+        $this->assertEquals($redis->getServiceName(), 'REDIS');
     }
 }

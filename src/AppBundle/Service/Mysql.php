@@ -2,6 +2,8 @@
 
 namespace AppBundle\Service;
 
+use Doctrine\ORM\EntityManager;
+
 /**
  * class Mysql
  *
@@ -10,9 +12,14 @@ namespace AppBundle\Service;
  * @package  AppBundle\Service
  * @author   Adil El Kanabi
  */
-class Mysql extends AbstractService
+class Mysql implements ServiceInterface
 {
-    const SERVICE_NAME = 'MYSQL';
+    protected $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     /**
      * Checks if mysql is up
@@ -21,13 +28,19 @@ class Mysql extends AbstractService
     public function isUp(): bool
     {
         try {
-            $doctrine = $this->container->get('doctrine');
-            $connection = $doctrine->getConnection();
+            $connection = $this->entityManager->getConnection();
             return $connection->ping();
         } catch (\Exception $exception) {
             return false;
         }
+    }
 
-        return false;
+    /**
+     * return the name of the mysql service
+     * @return string
+     */
+    public function getServiceName(): string
+    {
+        return 'MYSQL';
     }
 }

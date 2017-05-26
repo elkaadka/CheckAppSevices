@@ -6,6 +6,7 @@ use AppBundle\Service\Mysql;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\Container;
 
 /**
@@ -28,27 +29,18 @@ class MysqlTest extends \PHPUnit\Framework\TestCase
             ->withAnyParameters()
             ->willReturn(true);
 
-        $doctrine =$this
-            ->getMockBuilder(Registry::class)
+
+        $entityManager = $this
+            ->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $doctrine
+        $entityManager
             ->expects($this->once())
             ->method('getConnection')
             ->withAnyParameters()
             ->willReturn($connection);
 
-        $container = $this
-            ->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($doctrine);
-
-        $mysql = new Mysql($container);
+        $mysql = new Mysql($entityManager);
 
         $this->assertTrue($mysql->isUp());
     }
@@ -65,55 +57,59 @@ class MysqlTest extends \PHPUnit\Framework\TestCase
             ->withAnyParameters()
             ->willReturn(false);
 
-        $doctrine =$this
-            ->getMockBuilder(Registry::class)
+
+        $entityManager = $this
+            ->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $doctrine
+        $entityManager
             ->expects($this->once())
             ->method('getConnection')
             ->withAnyParameters()
             ->willReturn($connection);
 
-        $container = $this
-            ->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($doctrine);
-
-        $mysql = new Mysql($container);
+        $mysql = new Mysql($entityManager);
 
         $this->assertFalse($mysql->isUp());
     }
 
     public function testIsUpFailWithException()
     {
-        $doctrine =$this
-            ->getMockBuilder(Registry::class)
+        $connection =$this
+            ->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $doctrine
+        $connection
             ->expects($this->once())
-            ->method('getConnection')
+            ->method('ping')
             ->withAnyParameters()
             ->willThrowException(new InvalidArgumentException());
 
-        $container = $this
-            ->getMockBuilder(Container::class)
+
+        $entityManager = $this
+            ->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $container
+        $entityManager
             ->expects($this->once())
-            ->method('get')
+            ->method('getConnection')
             ->withAnyParameters()
-            ->willReturn($doctrine);
+            ->willReturn($connection);
 
-        $mysql = new Mysql($container);
+        $mysql = new Mysql($entityManager);
 
         $this->assertFalse($mysql->isUp());
+    }
+
+    public function testGetServiceName()
+    {
+        $entityManager = $this
+            ->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mysql = new Mysql($entityManager);
+
+        $this->assertEquals($mysql->getServiceName(), 'MYSQL');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace AppBundle\Service;
 
+use Predis\Client;
+
 /**
  * class Redis
  *
@@ -10,9 +12,14 @@ namespace AppBundle\Service;
  * @package  AppBundle\Service
  * @author   Adil El Kanabi
  */
-class Redis extends AbstractService
+class Redis implements ServiceInterface
 {
-    const SERVICE_NAME = 'REDIS';
+    protected $redis;
+
+    public function __construct(Client $redis)
+    {
+        $this->redis = $redis;
+    }
 
     /**
      * Checks if redis is up
@@ -21,13 +28,19 @@ class Redis extends AbstractService
     public function isUp(): bool
     {
         try {
-            $redis = $this->container->get('snc_redis.default');
-            $redis->connect();
-            return $redis->isConnected();
+            $this->redis->connect();
+            return $this->redis->isConnected();
         } catch (\Exception $exception) {
             return false;
         }
+    }
 
-        return false;
+    /**
+     * returns the name of the redis service
+     * @return string
+     */
+    public function getServiceName(): string
+    {
+       return 'REDIS';
     }
 }

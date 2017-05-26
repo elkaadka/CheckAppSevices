@@ -25,16 +25,18 @@ class StatusController extends Controller
         //init the array that will be sent as json to APP: true
         $data = ['APP' => true];
 
-        //Got through all the services Known to check if they are up and running
-        $serviceFactory = new ServiceFactory();
-        foreach ($serviceFactory->getAllServices($this->container) as $service) {
-            //add the service to the data
-            $data[$service::SERVICE_NAME] = $service->isUp();
-        }
+        //check if mysql is up
+        $mysql = $this->get('service_mysql');
+        $data[$mysql->getServiceName()] = $mysql->isUp();
+
+        //check if redis is up
+        $redis = $this->get('service_redis');
+        $data[$redis->getServiceName()] = $redis->isUp();
 
         //if all the services are ok, the APP is OK, if one is KO, the app is KO
         $data['APP'] = (bool)array_product($data);
 
+        //send the data
         return new JsonResponse($data);
     }
 }
